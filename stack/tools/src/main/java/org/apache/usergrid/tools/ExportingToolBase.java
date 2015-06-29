@@ -28,6 +28,8 @@ import org.codehaus.jackson.impl.DefaultPrettyPrinter;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.usergrid.persistence.cassandra.CassandraService;
 import org.apache.usergrid.utils.ConversionUtils;
 
 import org.apache.commons.cli.CommandLine;
@@ -53,6 +55,8 @@ public abstract class ExportingToolBase extends ToolBase {
     protected String baseOutputDirName = "export";
     protected UUID orgId;
     protected String appName;
+    protected String systemKeyspace;
+    protected String appKeyspace;
     JsonFactory jsonFactory = new JsonFactory();
     protected long startTime = System.currentTimeMillis();
 
@@ -92,6 +96,25 @@ public abstract class ExportingToolBase extends ToolBase {
         if ( line.hasOption( "orgId" ) ) {
             orgId = ConversionUtils.uuid( line.getOptionValue( "orgId" ) );
         }
+    }
+
+    protected void applySystemKeyspace( CommandLine line) {
+        if ( line.hasOption( "systemKeyspace" ) ) {
+            systemKeyspace = line.getOptionValue( "systemKeyspace" );
+        }
+        else {
+            systemKeyspace = CassandraService.SYSTEM_KEYSPACE;
+        }
+    }
+
+    protected void applyApplicationKeyspace( CommandLine line) {
+        if ( line.hasOption( "appKeyspace" ) ) {
+            appKeyspace = line.getOptionValue( "appKeyspace" ) ;
+        }
+        else {
+            appKeyspace = CassandraService.STATIC_APPLICATION_KEYSPACE;
+        }
+
     }
 
 

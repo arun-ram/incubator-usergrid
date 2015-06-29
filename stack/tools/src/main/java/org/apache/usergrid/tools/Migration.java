@@ -45,6 +45,10 @@ import java.util.concurrent.TimeUnit;
  * Export Single application and all entities inside.
  *
  * java -jar usergrid-tools.jar Migration -orgId -appName
+ *
+ * for an example command
+ * java -jar usergrid-tools-1.0.2.jar Migration -host localhost:9160 -orgId <orgUUID>
+ * -appName test -systemKeyspace Usergrid -appKeyspace Usergrid_Apps
  */
 public class Migration extends ExportingToolBase {
 
@@ -86,6 +90,9 @@ public class Migration extends ExportingToolBase {
             logger.error( "Must include a application name using -appName. Aborting..." );
             return;
         }
+        applySystemKeyspace( line );
+        applyApplicationKeyspace( line );
+
         prepareBaseOutputFileName( line );
         outputDir = createOutputParentDir();
         logger.info( "Export directory: " + outputDir.getAbsolutePath() );
@@ -93,8 +100,8 @@ public class Migration extends ExportingToolBase {
 
         //TODO: reset the keyspace to be whatever we specify in the tool
         //if it is not that keyspace then just use the default keyspaces.
-        //properties.setProperty( "cassandra.system.keyspace",);
-        properties.setProperty( "cassandra.application.keyspace", "Bobgrid_Apps");
+        properties.setProperty( "cassandra.system.keyspace",systemKeyspace);
+        properties.setProperty( "cassandra.application.keyspace", appKeyspace);
 
         //Then reinitialize the bootstraped cassandra service to use the new properties.
         cass.init();
@@ -195,12 +202,20 @@ public class Migration extends ExportingToolBase {
         Options options = super.createOptions();
 
         Option readThreads = OptionBuilder
-                .hasArg().withType(0).withDescription("Read Threads -" + READ_THREAD_COUNT).create(READ_THREAD_COUNT);
+                .hasArg().withType(0).withDescription("Read Threads -" + READ_THREAD_COUNT).create( READ_THREAD_COUNT );
 
-        Option appName = OptionBuilder.hasArg().withType( 0 ).withDescription( "Application Name =").create( "appName" );
+        Option appName = OptionBuilder.hasArg().withType( 0 ).withDescription( "Application Name").create( "appName" );
+
+        Option systemKeyspace = OptionBuilder.hasArg().withType( 0 ).withDescription( "System Keyspace").create(
+                "systemKeyspace" );
+
+        Option appKeyspace = OptionBuilder.hasArg().withType( 0 ).withDescription( "Application Keyspace").create(
+                "appKeyspace" );
 
         options.addOption( readThreads );
         options.addOption( appName );
+        options.addOption( systemKeyspace );
+        options.addOption( appKeyspace );
         return options;
     }
 
