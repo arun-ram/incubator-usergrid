@@ -39,6 +39,7 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -380,7 +381,8 @@ public class Migration extends ExportingToolBase {
             usersFile.setPrettyPrinter( new MinimalPrettyPrinter( "" ) );
             //usersFile.writeStartArray();
 
-            int count = 0;
+            AtomicInteger count = new AtomicInteger( 0 );
+
 
             while ( true ) {
 
@@ -406,8 +408,8 @@ public class Migration extends ExportingToolBase {
                     usersFile.writeRaw( '\n' );
                     logger.debug( "Exported user {}", task.entity.getProperty( "email" ) );
 
-                    count++;
-                    if ( count % 1000 == 0 ) {
+                    //count.incrementAndGet()
+                    if ( count.incrementAndGet() % 1000 == 0 ) {
                         logger.info("Exported {} entities", count);
                     }
 
@@ -420,7 +422,7 @@ public class Migration extends ExportingToolBase {
            // usersFile.writeEndArray();
             usersFile.close();
 
-            logger.info("Exported TOTAL {} entities", count);
+            logger.info("Exported TOTAL {} entities", count.get());
         }
 
         private void saveDictionaries( JsonGenerator jg, ApplicationWriteTask task ) throws Exception {
