@@ -62,8 +62,8 @@ public class MigrationTest {
     public void testExportUserAndOrg() throws Exception {
 
 
-        // Create orgOwner+Application
-        int numOfEntities = 10;
+        // Works pretty well with larger values as well
+        int numOfEntities = 500;
 
         final String random1 = RandomStringUtils.randomAlphanumeric( 10 );
 
@@ -90,10 +90,12 @@ public class MigrationTest {
         for ( int index = 0; index < numOfEntities; index++ ) {
             entityLevelProperties = new LinkedHashMap<String, Object>();
             entityLevelProperties.put( "username", "user_"+index );
+            entityLevelProperties.put( "firstproperty","first"+RandomStringUtils.randomAlphanumeric( 10 ));
+            entityLevelProperties.put( "secondproperty","second"+RandomStringUtils.randomAlphanumeric( 10 ));
+            entityLevelProperties.put( "thirdproperty","third"+RandomStringUtils.randomAlphanumeric( 10 ));
+
             entNotCopied[index] = customMaker.create( "superappCol" + random1, entityLevelProperties );
         }
-        //    }
-       // }
 
 
         // export to file
@@ -140,7 +142,7 @@ public class MigrationTest {
         }
 
         //TODO: Add further verification.
-        for ( int i = 0; i < 10; i++ ) {
+        for ( int i = 0; i < numOfEntities; i++ ) {
             assertTrue( usernames.contains( "user_"+i ) );
         }
 

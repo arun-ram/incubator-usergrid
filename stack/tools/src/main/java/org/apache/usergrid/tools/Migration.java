@@ -264,7 +264,7 @@ public class Migration extends ExportingToolBase {
                     ApplicationWriteTask task = new ApplicationWriteTask();
                     task.entity = entity;
 
-                    addCollectionsToTask(   task, entity );
+                    //addCollectionsToTask(   task, entity );
                     addDictionariesToTask(  task, entity );
                     addConnectionsToTask(   task, entity );
 
@@ -295,6 +295,7 @@ public class Migration extends ExportingToolBase {
                     task.collectionsByName.put( collectionName, uuids );
                 }
 
+                //probably better to read sets of a thousand rather then a single bulk 100k pull.
                 Results collectionMembers = em.getCollection( entity, collectionName, null, 100000, Level.IDS, false );
 
                 List<UUID> entityIds = collectionMembers.getIds();
